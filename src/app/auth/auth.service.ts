@@ -37,6 +37,10 @@ export class AuthService {
     return this._state.value;
   }
 
+  get isSystemAdmin(): boolean {
+    return this.current?.role === "SYSTEM_ADMIN";
+  }
+
   login(payload: LoginRequest) {
     return this.http.post<LoginResponse>("/api/auth/login", payload).pipe(
       tap((res) => {
