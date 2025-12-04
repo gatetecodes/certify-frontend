@@ -31,7 +31,7 @@ export class LoginPageComponent {
     this.auth.login(this.form).subscribe({
       next: () => {
         this.loading = false;
-        this.router.navigateByUrl("/templates");
+        this.router.navigateByUrl("/");
       },
       error: (err) => {
         this.loading = false;
