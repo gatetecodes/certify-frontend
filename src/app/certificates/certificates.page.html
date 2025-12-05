@@ -56,7 +56,8 @@
             </div>
           </div>
 
-          <div class="flex gap-3 pt-2">
+          <div class="flex flex-col gap-2 pt-2">
+            <div class="flex gap-3">
             <button
               type="button"
               (click)="simulate()"
@@ -80,6 +81,27 @@
               </svg>
               Generate
             </button>
+            <!-- <button
+              type="button"
+              (click)="generateAsync()"
+              [disabled]="loading"
+              class="flex-1 inline-flex justify-center items-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-slate-400/40 hover:bg-black hover:shadow-xl transition-all disabled:opacity-50"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                class="w-4 h-4"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M4.5 2.75A.75.75 0 015.25 2h4a.75.75 0 01.53.22l5 5a.75.75 0 010 1.06l-4 4a.75.75 0 01-1.28-.53V10.5H5.25A.75.75 0 014.5 9.75v-7zM3.5 13.75a.75.75 0 011.5 0v2.5A1.75 1.75 0 006.75 18h8.5a1.75 1.75 0 001.75-1.75v-2.5a.75.75 0 011.5 0v2.5A3.25 3.25 0 0115.25 18h-8.5A3.25 3.25 0 013.5 16.25v-2.5z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              Async generate
+            </button> -->
+            </div>
           </div>
         </ng-container>
 
@@ -94,7 +116,7 @@
         </div>
       </div>
 
-      <div *ngIf="error" class="mt-4 rounded-lg bg-red-50 p-3 flex items-start gap-3">
+      <div *ngIf="error" class="mt-3 rounded-lg bg-red-50 p-3 flex items-start gap-3">
          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 text-red-500 shrink-0">
             <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
          </svg>
@@ -105,7 +127,7 @@
 
   <!-- List -->
   <div class="lg:col-span-8">
-    <div class="rounded-2xl border border-white/50 bg-white shadow-lg shadow-secondary/5 overflow-hidden">
+    <div class="rounded-2xl border border-white/50 bg-white shadow-lg shadow-secondary/5">
       <div class="border-b border-slate-100 px-6 py-5 flex items-center justify-between">
         <div class="flex items-center gap-3">
              <div class="flex h-10 w-10 items-center justify-center rounded-full bg-secondary/10 text-secondary">
@@ -120,14 +142,15 @@
         </span>
       </div>
 
-      <div class="overflow-x-auto">
+      <div class="overflow-x-auto pb-40">
         <table class="w-full text-left text-sm">
           <thead class="bg-slate-50/80 text-slate-500 border-b border-slate-100">
             <tr>
               <th class="px-6 py-4 font-semibold">ID</th>
               <th class="px-6 py-4 font-semibold">Template</th>
+              <th class="px-6 py-4 font-semibold">Status</th>
               <th class="px-6 py-4 font-semibold">Issued At</th>
-              <th class="px-6 py-4 font-semibold">Issued By</th>
+
               <th class="px-6 py-4 font-semibold text-right">Actions</th>
             </tr>
           </thead>
@@ -137,7 +160,33 @@
                   <span class="bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">{{ c.id | slice : 0 : 8 }}</span>
               </td>
               <td class="px-6 py-4">
-                  <div class="font-medium text-slate-900">{{ c.templateId | slice : 0 : 8 }}...</div>
+                  <div class="font-medium text-slate-900">
+                    {{ templateName(c.templateId) }}
+                  </div>
+              </td>
+              <td class="px-6 py-4">
+                <span
+                  class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium"
+                  [ngClass]="{
+                    'bg-emerald-50 text-emerald-700 border border-emerald-200':
+                      c.status === 'GENERATED',
+                    'bg-red-50 text-red-700 border border-red-200':
+                      c.status === 'REVOKED',
+                    'bg-slate-100 text-slate-600 border border-slate-200':
+                      c.status !== 'GENERATED' && c.status !== 'REVOKED'
+                  }"
+                >
+                  <span
+                    class="h-1.5 w-1.5 rounded-full"
+                    [ngClass]="{
+                      'bg-emerald-500': c.status === 'GENERATED',
+                      'bg-red-500': c.status === 'REVOKED',
+                      'bg-slate-400':
+                        c.status !== 'GENERATED' && c.status !== 'REVOKED'
+                    }"
+                  ></span>
+                  {{ c.status }}
+                </span>
               </td>
               <td class="px-6 py-4 text-slate-600">
                   <div class="flex items-center gap-1.5">
@@ -147,37 +196,90 @@
                       {{ c.createdAt | date : "mediumDate" }}
                   </div>
               </td>
-              <td class="px-6 py-4 text-slate-600">
-                  <div class="flex items-center gap-1.5">
-                       <div class="h-6 w-6 rounded-full bg-secondary/20 text-secondary-dark flex items-center justify-center text-xs font-bold">
-                           {{ c.createdBy.charAt(0) | uppercase }}
-                       </div>
-                       {{ c.createdBy }}
-                  </div>
-              </td>
-              <td class="px-6 py-4 flex items-center justify-end gap-3">
-                <a
-                  *ngIf="c.verificationUrl"
-                  [href]="c.verificationUrl"
-                  target="_blank"
-                  class="inline-flex items-center gap-1 text-xs font-bold text-secondary hover:text-secondary-dark hover:underline"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
-                    <path fill-rule="evenodd" d="M16.403 12.652a3 3 0 000-5.304 3 3 0 00-3.75-3.751 3 3 0 00-5.305 0 3 3 0 00-3.751 3.75 3 3 0 000 5.305 3 3 0 003.75 3.751 3 3 0 005.305 0 3 3 0 003.75-3.751zm-2.546-4.46a.75.75 0 00-1.214-.883l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
-                  </svg>
-                  Verify
-                </a>
+
+              <td class="relative px-6 py-4 text-right">
                 <button
                   type="button"
-                  (click)="download(c)"
-                  class="inline-flex items-center gap-1 rounded-md bg-white border border-slate-200 px-2.5 py-1.5 text-xs font-bold text-slate-600 hover:border-primary hover:text-primary hover:bg-primary/5 transition-colors"
+                  (click)="toggleActions(c)"
+                  class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300 transition-colors"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
-                    <path d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.965 3.129V2.75z" />
-                    <path d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    class="w-4 h-4"
+                  >
+                    <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
                   </svg>
-                  Download
                 </button>
+
+                <div
+                  *ngIf="openActionsId === c.id"
+                  class="absolute right-6 mt-2 w-40 rounded-lg border border-slate-200 bg-white shadow-lg shadow-slate-200/60 z-10"
+                >
+                  <button
+                    type="button"
+                    (click)="openVerification(c)"
+                    [disabled]="!c.verificationUrl || c.status !== 'GENERATED'"
+                    class="flex w-full items-center gap-2 px-3 py-2 text-xs text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      class="w-3.5 h-3.5"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M16.403 12.652a3 3 0 000-5.304 3 3 0 00-3.75-3.751 3 3 0 00-5.305 0 3 3 0 00-3.751 3.75 3 3 0 000 5.305 3 3 0 003.75 3.751 3 3 0 005.305 0 3 3 0 003.75-3.751zm-2.546-4.46a.75.75 0 00-1.214-.883l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                    <span>Verify</span>
+                  </button>
+                  <button
+                    type="button"
+                    (click)="download(c)"
+                    [disabled]="c.status !== 'GENERATED'"
+                    class="flex w-full items-center gap-2 px-3 py-2 text-xs text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      class="w-3.5 h-3.5 text-primary"
+                    >
+                      <path
+                        d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.965 3.129V2.75z"
+                      />
+                      <path
+                        d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z"
+                      />
+                    </svg>
+                    <span>Download</span>
+                  </button>
+                  <button
+                    *ngIf="auth.current?.role === 'TENANT_ADMIN'"
+                    type="button"
+                    (click)="revoke(c)"
+                    [disabled]="c.status !== 'GENERATED'"
+                    class="flex w-full items-center gap-2 px-3 py-2 text-xs text-red-600 hover:bg-red-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      class="w-3.5 h-3.5"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                    <span>Revoke</span>
+                  </button>
+                </div>
               </td>
             </tr>
              <tr *ngIf="certificates.length === 0">

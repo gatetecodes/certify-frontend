@@ -1,9 +1,29 @@
 import { CommonModule } from "@angular/common";
-import { Component, inject } from "@angular/core";
-import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
+import { Component, inject, OnInit } from "@angular/core";
+import {
+  AbstractControl,
+  FormBuilder,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
+} from "@angular/forms";
 import { RouterModule } from "@angular/router";
 import { TenantsService } from "./tenants.service";
 
+function strongPasswordValidator(
+  control: AbstractControl
+): ValidationErrors | null {
+  const value = control.value;
+  if (!value) return null;
+
+  const hasUpperCase = /[A-Z]/.test(value);
+  const hasLowerCase = /[a-z]/.test(value);
+  const hasNumeric = /[0-9]/.test(value);
+  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(value);
+
+  const valid = hasUpperCase && hasLowerCase && hasNumeric && hasSpecialChar;
+  return valid ? null : { weakPassword: true };
+}
 @Component({
   selector: "app-tenants-page",
   standalone: true,
@@ -11,7 +31,7 @@ import { TenantsService } from "./tenants.service";
   templateUrl: "./tenants.page.html",
   styleUrls: ["./tenants.page.scss"],
 })
-export class TenantsPageComponent {
+export class TenantsPageComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly tenantsService = inject(TenantsService);
 
@@ -27,7 +47,10 @@ export class TenantsPageComponent {
     tenantSlug: [""],
     adminFullName: ["", Validators.required],
     adminEmail: ["", [Validators.required, Validators.email]],
-    adminPassword: ["", [Validators.required, Validators.minLength(8)]],
+    adminPassword: [
+      "",
+      [Validators.required, Validators.minLength(8), strongPasswordValidator],
+    ],
   });
 
   ngOnInit(): void {
@@ -63,7 +86,13 @@ export class TenantsPageComponent {
       next: (created) => {
         this.submitting = false;
         this.successMessage = `Organization "${created.name}" created successfully.`;
-        this.form.reset();
+        this.form.reset({
+          tenantName: "",
+          tenantSlug: "",
+          adminFullName: "",
+          adminEmail: "",
+          adminPassword: "",
+        });
       },
       error: (err) => {
         this.submitting = false;

@@ -21,6 +21,22 @@ export interface CertificateResponse {
   verificationUrl: string | null;
 }
 
+export type CertificateJobStatus =
+  | "PENDING"
+  | "PROCESSING"
+  | "COMPLETED"
+  | "FAILED";
+
+export interface CertificateJobResponse {
+  id: string;
+  templateId: string;
+  status: CertificateJobStatus;
+  certificateId: string | null;
+  errorMessage: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 @Injectable({ providedIn: "root" })
 export class CertificatesService {
   private readonly baseUrl = "/api/v1/certificates";
@@ -37,6 +53,13 @@ export class CertificatesService {
     return this.http.post<CertificateResponse>(this.baseUrl, request);
   }
 
+  revoke(id: string): Observable<CertificateResponse> {
+    return this.http.post<CertificateResponse>(
+      `${this.baseUrl}/${id}/revoke`,
+      {}
+    );
+  }
+
   simulate(request: CertificateGenerateRequest): Observable<Blob> {
     return this.http.post(`${this.baseUrl}/simulate`, request, {
       responseType: "blob",
@@ -47,5 +70,18 @@ export class CertificatesService {
     return this.http.get(`${this.baseUrl}/${id}/download`, {
       responseType: "blob",
     });
+  }
+
+  submitJob(
+    request: CertificateGenerateRequest
+  ): Observable<CertificateJobResponse> {
+    return this.http.post<CertificateJobResponse>(
+      `${this.baseUrl}/async`,
+      request
+    );
+  }
+
+  getJobStatus(id: string): Observable<CertificateJobResponse> {
+    return this.http.get<CertificateJobResponse>(`${this.baseUrl}/jobs/${id}`);
   }
 }
