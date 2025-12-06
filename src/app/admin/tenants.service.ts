@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { BehaviorSubject, Observable, tap } from "rxjs";
-import { environment } from "../../environments/environment";
+import { buildApiUrl } from "../../environments/environment";
 
 export interface TenantAdminContact {
   fullName: string;
@@ -35,13 +35,13 @@ export class TenantsService {
 
   loadTenants(): Observable<TenantSummary[]> {
     return this.http
-      .get<TenantSummary[]>(`${environment.apiUrl}/api/admin/tenants`)
+      .get<TenantSummary[]>(buildApiUrl("/api/admin/tenants"))
       .pipe(tap((tenants) => this.tenantsSubject.next(tenants)));
   }
 
   createTenant(payload: CreateTenantRequest): Observable<TenantSummary> {
     return this.http
-      .post<TenantSummary>(`${environment.apiUrl}/api/admin/tenants`, payload)
+      .post<TenantSummary>(buildApiUrl("/api/admin/tenants"), payload)
       .pipe(
         tap((created) => {
           const current = this.tenantsSubject.value;

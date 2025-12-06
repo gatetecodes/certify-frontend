@@ -1,4 +1,11 @@
-import { Component, OnInit, inject } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  inject,
+  ChangeDetectorRef,
+} from "@angular/core";
+import { Subscription } from "rxjs";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import {
@@ -19,10 +26,13 @@ import { AuthService } from "../auth/auth.service";
   templateUrl: "./certificates.page.html",
   styleUrls: ["./certificates.page.scss"],
 })
-export class CertificatesPageComponent implements OnInit {
+export class CertificatesPageComponent implements OnInit, OnDestroy {
   private readonly templatesService = inject(TemplatesService);
   private readonly certificatesService = inject(CertificatesService);
+  private readonly cdr = inject(ChangeDetectorRef);
   readonly auth = inject(AuthService);
+
+  private subscriptions: Subscription[] = [];
 
   templates: TemplateResponse[] = [];
   certificates: CertificateResponse[] = [];
@@ -35,8 +45,16 @@ export class CertificatesPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.templatesService.loadTemplates();
-    this.templatesService.templates$.subscribe((t) => (this.templates = t));
+    const templatesSub = this.templatesService.templates$.subscribe((t) => {
+      console.log("Templates updated:", t);
+      this.templates = t;
+    });
+    this.subscriptions.push(templatesSub);
     this.refreshCertificates();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
 
   onTemplateChange(templateId: string): void {
@@ -155,9 +173,27 @@ export class CertificatesPageComponent implements OnInit {
   }
 
   private refreshCertificates(): void {
-    this.certificatesService
-      .list()
-      .subscribe((list) => (this.certificates = list));
+    // Clear existing certificates before loading new ones
+    this.certificates = [];
+    this.loading = true;
+
+    const certsSub = this.certificatesService.list().subscribe({
+      next: (list) => {
+        console.log("Certificates received:", list);
+        this.certificates = list || [];
+        console.log("Certificates assigned:", this.certificates);
+        this.loading = false;
+        // Force change detection to ensure UI updates immediately
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error("Failed to load certificates:", error);
+        this.certificates = [];
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
+    });
+    this.subscriptions.push(certsSub);
   }
 
   get currentPlaceholders(): PlaceholderDefinition[] {
