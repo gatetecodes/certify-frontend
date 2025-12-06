@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
+import { environment } from "../../environments/environment";
 
 export interface CertificateGenerateRequest {
   templateId: string;
@@ -39,7 +40,7 @@ export interface CertificateJobResponse {
 
 @Injectable({ providedIn: "root" })
 export class CertificatesService {
-  private readonly baseUrl = "/api/v1/certificates";
+  private readonly baseUrl = `${environment.apiUrl}/api/v1/certificates`;
 
   constructor(private readonly http: HttpClient) {}
 
