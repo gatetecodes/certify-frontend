@@ -140,6 +140,12 @@
         <span class="text-xs font-medium text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full" *ngIf="certificates.length">
             {{ certificates.length }} Total
         </span>
+        <div class="text-xs text-slate-400 mt-2" *ngIf="loading">
+            Loading certificates...
+        </div>
+        <div class="text-xs text-slate-400 mt-2" *ngIf="!loading && certificates.length === 0">
+            No certificates found. Try generating one above.
+        </div>
       </div>
 
       <div class="overflow-x-auto pb-40">

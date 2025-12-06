@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Router } from "@angular/router";
 import { BehaviorSubject, tap } from "rxjs";
-import { environment } from "../../environments/environment";
+import { buildApiUrl } from "../../environments/environment";
 
 export interface LoginRequest {
   email: string;
@@ -44,7 +44,7 @@ export class AuthService {
 
   login(payload: LoginRequest) {
     return this.http
-      .post<LoginResponse>(`${environment.apiUrl}/api/auth/login`, payload)
+      .post<LoginResponse>(buildApiUrl("/api/auth/login"), payload)
       .pipe(
         tap((res) => {
           this._state.next(res);

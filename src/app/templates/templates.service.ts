@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { BehaviorSubject, tap } from "rxjs";
-import { environment } from "../../environments/environment";
+import { buildApiUrl } from "../../environments/environment";
 
 export interface PlaceholderDefinition {
   key: string;
@@ -25,7 +25,7 @@ export interface TemplateResponse extends TemplateRequest {
 
 @Injectable({ providedIn: "root" })
 export class TemplatesService {
-  private readonly baseUrl = `${environment.apiUrl}/api/v1/templates`;
+  private readonly baseUrl = buildApiUrl("/api/v1/templates");
 
   private readonly _templates = new BehaviorSubject<TemplateResponse[]>([]);
   readonly templates$ = this._templates.asObservable();
