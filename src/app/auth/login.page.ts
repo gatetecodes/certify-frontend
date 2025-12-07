@@ -38,7 +38,6 @@ export class LoginPageComponent {
       },
       error: (err) => {
         this.loading = false;
-        // Extract error message safely from various possible error formats
         let msg = "Login failed. Check credentials.";
         if (err?.error?.message) {
           msg = err.error.message;
