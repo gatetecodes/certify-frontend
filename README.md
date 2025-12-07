@@ -19,9 +19,7 @@ Demo URL: https://sec-certificate.usecarelogic.com
 #### Login
 
 1. Navigate to the login page at `/login`
-2. Enter your email and password (test credentials provided below):
-   - **System Admin**: Email: **codesafarirw@gmail.com**, Password: **Password1234!**
-   - **Tenant Admin**: Email: **pnzukira@gmail.com**, password: **Password1234!**
+2. Enter your email and password (test credentials provided in the Google Slides presentation):
 3. After successful login, you'll be redirected based on your role:
    - **System Admin**: Access to Customers management
    - **Tenant Admin/User**: Access to Templates and Certificates
