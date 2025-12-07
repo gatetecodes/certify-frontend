@@ -6,7 +6,7 @@ Angular 21 frontend for certificate management.
 
 - Node.js and npm
 
-### Running the Application
+### Running the Application Locally
 
 1. Install dependencies: `npm install`
 2. Start dev server: `npm start`
@@ -14,10 +14,14 @@ Angular 21 frontend for certificate management.
 
 ### Using the Application
 
+Demo URL: https://sec-certificate.usecarelogic.com
+
 #### Login
 
 1. Navigate to the login page at `/login`
-2. Enter your email and password
+2. Enter your email and password (test credentials provided below):
+   - **System Admin**: Email: **codesafarirw@gmail.com**, Password: **Password1234!**
+   - **Tenant Admin**: Email: **pnzukira@gmail.com**, password: **Password1234!**
 3. After successful login, you'll be redirected based on your role:
    - **System Admin**: Access to Customers management
    - **Tenant Admin/User**: Access to Templates and Certificates
@@ -46,6 +50,138 @@ Angular 21 frontend for certificate management.
      - Type (text, date, etc.)
      - Required flag
    - Click **Save Template**
+
+   ##### Sample Template Markup
+
+   ```html
+   <!DOCTYPE html>
+   <html>
+     <head>
+       <meta charset="UTF-8" />
+       <title>Certificate</title>
+       <style>
+         body {
+           font-family: "Times New Roman", Georgia, "Times", serif;
+           margin: 0;
+           padding: 40px;
+           background: #f3f3f3;
+         }
+         .certificate {
+           background: #fffdf5;
+           border: 6px solid #b38b59;
+           padding: 40px 60px;
+           max-width: 900px;
+           margin: 0 auto;
+           box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+         }
+         .inner-border {
+           border: 2px solid #d2b48c;
+           padding: 30px 40px;
+         }
+         .title {
+           text-align: center;
+           font-size: 32px;
+           letter-spacing: 4px;
+           text-transform: uppercase;
+           font-weight: bold;
+           margin-bottom: 10px;
+         }
+         .subtitle {
+           text-align: center;
+           font-size: 16px;
+           color: #555;
+           margin-bottom: 40px;
+         }
+         .recipient-label {
+           text-align: center;
+           font-size: 16px;
+           letter-spacing: 2px;
+           text-transform: uppercase;
+           color: #777;
+         }
+         .recipient-name {
+           text-align: center;
+           font-size: 28px;
+           font-weight: bold;
+           margin: 10px 0 30px;
+         }
+         .body-text {
+           font-size: 16px;
+           line-height: 1.6;
+           text-align: center;
+           margin: 0 40px 50px;
+         }
+         .footer {
+           display: flex;
+           justify-content: space-between;
+           align-items: flex-end;
+           margin-top: 40px;
+         }
+         .signature-block {
+           text-align: left;
+         }
+         .signature-line {
+           margin-top: 40px;
+           border-top: 1px solid #000;
+           width: 260px;
+         }
+         .signature-name {
+           margin-top: 8px;
+           font-weight: 600;
+         }
+         .meta {
+           font-size: 14px;
+           color: #555;
+           margin-top: 8px;
+         }
+         .qr-block {
+           text-align: right;
+           font-size: 12px;
+           color: #555;
+         }
+         .qr-block img {
+           width: 120px;
+           height: 120px;
+           margin-bottom: 6px;
+         }
+       </style>
+     </head>
+     <body>
+       <div class="certificate">
+         <div class="inner-border">
+           <div class="title">Certificate of Appreciation</div>
+           <div class="subtitle">This certificate is proudly presented to</div>
+
+           <div class="recipient-label">Presented to</div>
+           <div class="recipient-name">${recipientName}</div>
+
+           <p class="body-text">
+             In recognition of outstanding performance and valuable contribution.
+             Your dedication and hard work have significantly impacted the success
+             of our organization.
+           </p>
+
+           <div class="footer">
+             <div class="signature-block">
+               <div class="meta">Issued on: ${issueDate}</div>
+               <div class="signature-line"></div>
+               <div class="signature-name">${issuerName}</div>
+               <div class="meta">On behalf of the company</div>
+             </div>
+
+             <div class="qr-block">
+               <img src="${qrCodeImage}" alt="Verification QR code" />
+               <div>Scan to verify authenticity</div>
+               <div>${verificationUrl}</div>
+             </div>
+           </div>
+         </div>
+       </div>
+     </body>
+   </html>
+   ```
+
+
 
 #### Generating Certificates (Tenant Admin/User)
 
