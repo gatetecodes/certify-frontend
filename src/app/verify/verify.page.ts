@@ -76,6 +76,12 @@ export class VerifyPageComponent implements OnInit {
 
     if (!err) {
       this.error = "An unknown error occurred while verifying the certificate.";
+      this.cdr.detectChanges();
+      return;
+    }
+
+    if (err.name === "TimeoutError") {
+      this.error = "The verification request timed out. Please try again.";
       return;
     }
 
@@ -96,5 +102,6 @@ export class VerifyPageComponent implements OnInit {
         err?.error?.message || err?.message || "Unknown error";
       this.error = `Could not verify this certificate. ${errorMessage}`;
     }
+    this.cdr.detectChanges();
   }
 }
