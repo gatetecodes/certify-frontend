@@ -1,7 +1,7 @@
 <div class="verify-container" *ngIf="!loading">
   <ng-container *ngIf="!error && result; else errorBlock">
-    <div class="status" [class.valid]="result!.valid" [class.invalid]="!result!.valid">
-      <div class="status-header">
+    <div class="status flex flex-col items-center justify-center gap-0" [class.valid]="result!.valid" [class.invalid]="!result!.valid">
+      <div class="status-header flex flex-col items-center justify-center gap-4">
         <span class="status-icon" *ngIf="result!.valid" aria-hidden="true">
           <svg viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="11" />
@@ -20,11 +20,11 @@
       <p class="reason">Reason: {{ result!.reason }}</p>
     </div>
 
-    <div class="details">
-      <h2>Details</h2>
-      <p><strong>Certificate ID:</strong> {{ result!.certificateId }}</p>
-      <p><strong>Template ID:</strong> {{ result!.templateId }}</p>
-      <p><strong>Issued at:</strong> {{ result!.issuedAt | date: "medium" }}</p>
+    <div class="details flex flex-col items-center justify-center gap-0">
+      <h2 class="text-lg font-bold">Details</h2>
+      <p class="text-sm"><strong>Certificate ID:</strong> {{ result!.certificateId }}</p>
+      <p class="text-sm"><strong>Template ID:</strong> {{ result!.templateId }}</p>
+      <p class="text-sm"><strong>Issued at:</strong> {{ result!.issuedAt | date: "medium" }}</p>
     </div>
   </ng-container>
 

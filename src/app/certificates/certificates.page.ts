@@ -4,6 +4,7 @@ import {
   OnDestroy,
   inject,
   ChangeDetectorRef,
+  HostListener,
 } from "@angular/core";
 import { Subscription } from "rxjs";
 import { CommonModule } from "@angular/common";
@@ -18,13 +19,20 @@ import {
   CertificateResponse,
 } from "./certificates.service";
 import { AuthService } from "../auth/auth.service";
+import { NgIconComponent, provideIcons } from "@ng-icons/core";
+import { heroDocumentText } from "@ng-icons/heroicons/outline";
 
 @Component({
   selector: "app-certificates-page",
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NgIconComponent],
   templateUrl: "./certificates.page.html",
   styleUrls: ["./certificates.page.scss"],
+  providers: [
+    provideIcons({
+      heroDocumentText,
+    }),
+  ],
 })
 export class CertificatesPageComponent implements OnInit, OnDestroy {
   private readonly templatesService = inject(TemplatesService);
@@ -172,8 +180,17 @@ export class CertificatesPageComponent implements OnInit, OnDestroy {
       this.openActionsId === certificate.id ? null : certificate.id;
   }
 
+  @HostListener("document:click", ["$event"])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    const isClickInsideContainer = target.closest(".dropdown-container");
+
+    if (!isClickInsideContainer && this.openActionsId !== null) {
+      this.openActionsId = null;
+    }
+  }
+
   private refreshCertificates(): void {
-    // Clear existing certificates before loading new ones
     this.certificates = [];
     this.loading = true;
 
@@ -183,7 +200,6 @@ export class CertificatesPageComponent implements OnInit, OnDestroy {
         this.certificates = list || [];
         console.log("Certificates assigned:", this.certificates);
         this.loading = false;
-        // Force change detection to ensure UI updates immediately
         this.cdr.detectChanges();
       },
       error: (error) => {
